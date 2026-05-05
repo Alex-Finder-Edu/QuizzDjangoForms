@@ -1,0 +1,10 @@
+{% extends "quizz_web_app/base.html" %}
+{% block title %}Quizz App — Home{% endblock %}
+{% block content %}
+<h1>Quizz App</h1>
+<ul>
+  <li>{{ domain_count }} domain{{ domain_count|pluralize }}</li>
+  <li>{{ subdomain_count }} subdomain{{ subdomain_count|pluralize }}</li>
+  <li>{{ question_count }} question{{ question_count|pluralize }}</li>
+</ul>
+{% endblock %}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Quizz App{% endblock %}</title>
+  <style>
+    body { font-family: sans-serif; max-width: 860px; margin: 2rem auto; padding: 0 1rem; }
+    nav a { margin-right: 1rem; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: .5rem .75rem; text-align: left; }
+    th { background: #f4f4f4; }
+    .actions a { margin-right: .5rem; }
+    .btn { padding: .35rem .75rem; text-decoration: none; border: 1px solid #999; border-radius: 3px; }
+    .btn-danger { background: #c0392b; color: #fff; border-color: #c0392b; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="{% url 'index' %}">Home</a>
+    <a href="{% url 'domain_list' %}">Domains</a>
+    <a href="{% url 'subdomain_list' %}">Subdomains</a>
+    <a href="{% url 'question_list' %}">Questions</a>
+  </nav>
+  <hr>
+  {% block content %}{% endblock %}
+</body>
+</html>
