@@ -1,0 +1,21 @@
+{% extends "quizz_web_app/base.html" %}
+{% block title %}{{ quiz.title }}{% endblock %}
+{% block content %}
+<h1>{{ quiz.title }}</h1>
+<form method="post">
+  {% csrf_token %}
+  {% for question in questions %}
+  <div class="question-block">
+    <strong>Q{{ forloop.counter }}.</strong> {{ question.text }}
+    <textarea name="answer_{{ question.pk }}" rows="3" placeholder="Your answer…"></textarea>
+  </div>
+  {% empty %}
+  <p>This quiz has no questions yet.</p>
+  {% endfor %}
+  {% if questions %}
+  <button type="submit" class="btn btn-primary">Submit Answers</button>
+  {% endif %}
+</form>
+<br>
+<a href="{% url 'quiz_list' %}">Back to quizzes</a>
+{% endblock %}

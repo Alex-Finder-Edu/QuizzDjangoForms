@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Domain, Subdomain, Question
-from .forms import DomainForm, SubdomainForm, QuestionForm
+from .models import Domain, Subdomain, Question, Quiz
+from .forms import DomainForm, SubdomainForm, QuestionForm, QuizForm
 
 
 def index(request):
@@ -8,6 +8,7 @@ def index(request):
         "domain_count": Domain.objects.count(),
         "subdomain_count": Subdomain.objects.count(),
         "question_count": Question.objects.count(),
+        "quiz_count": Quiz.objects.count(),
     })
 
 
@@ -105,3 +106,61 @@ def question_delete(request, pk):
         question.delete()
         return redirect("question_list")
     return render(request, "quizz_web_app/confirm_delete.html", {"object": question, "cancel_url": "question_list"})
+
+
+# --- Quiz ---
+
+def quiz_list(request):
+    quizzes = Quiz.objects.prefetch_related("questions").all()
+    return render(request, "quizz_web_app/quiz_list.html", {"quizzes": quizzes})
+
+
+def quiz_create(request):
+    form = QuizForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect("quiz_list")
+    return render(request, "quizz_web_app/quiz_form.html", {"form": form, "title": "Create Quiz"})
+
+
+def quiz_update(request, pk):
+    quiz = get_object_or_404(Quiz, pk=pk)
+    form = QuizForm(request.POST or None, instance=quiz)
+    if form.is_valid():
+        form.save()
+        return redirect("quiz_list")
+    return render(request, "quizz_web_app/quiz_form.html", {"form": form, "title": "Edit Quiz"})
+
+
+def quiz_delete(request, pk):
+    quiz = get_object_or_404(Quiz, pk=pk)
+    if request.method == "POST":
+        quiz.delete()
+        return redirect("quiz_list")
+    return render(request, "quizz_web_app/confirm_delete.html", {"object": quiz, "cancel_url": "quiz_list"})
+
+
+def quiz_take(request, pk):
+    quiz = get_object_or_404(Quiz, pk=pk)
+    questions = quiz.questions.select_related("subdomain__domain").all()
+
+    if request.method == "POST":
+        results = []
+        for question in questions:
+            user_answer = request.POST.get(f"answer_{question.pk}", "").strip()
+            is_correct = user_answer.lower() == question.correct_answer.strip().lower()
+            results.append({
+                "question": question,
+                "user_answer": user_answer,
+                "correct_answer": question.correct_answer,
+                "is_correct": is_correct,
+            })
+        score = sum(1 for r in results if r["is_correct"])
+        return render(request, "quizz_web_app/quiz_result.html", {
+            "quiz": quiz,
+            "results": results,
+            "score": score,
+            "total": len(results),
+        })
+
+    return render(request, "quizz_web_app/quiz_take.html", {"quiz": quiz, "questions": questions})

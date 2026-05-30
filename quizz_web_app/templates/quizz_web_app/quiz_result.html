@@ -1,0 +1,22 @@
+{% extends "quizz_web_app/base.html" %}
+{% block title %}Results — {{ quiz.title }}{% endblock %}
+{% block content %}
+<h1>{{ quiz.title }} — Results</h1>
+<p class="score-banner">Score: {{ score }} / {{ total }}</p>
+
+{% for result in results %}
+<div class="question-block">
+  <strong>Q{{ forloop.counter }}.</strong> {{ result.question.text }}
+  <p>Your answer: <em>{{ result.user_answer|default:"(no answer)" }}</em></p>
+  {% if result.is_correct %}
+    <p class="correct">Correct!</p>
+  {% else %}
+    <p class="incorrect">Incorrect.</p>
+    <p>Correct answer: <em>{{ result.correct_answer }}</em></p>
+  {% endif %}
+</div>
+{% endfor %}
+
+<a href="{% url 'quiz_take' quiz.pk %}" class="btn">Try Again</a>
+<a href="{% url 'quiz_list' %}" class="btn">Back to Quizzes</a>
+{% endblock %}
