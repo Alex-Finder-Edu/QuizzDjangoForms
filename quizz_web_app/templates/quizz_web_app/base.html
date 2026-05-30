@@ -13,6 +13,12 @@
     .actions a { margin-right: .5rem; }
     .btn { padding: .35rem .75rem; text-decoration: none; border: 1px solid #999; border-radius: 3px; }
     .btn-danger { background: #c0392b; color: #fff; border-color: #c0392b; }
+    .btn-primary { background: #2980b9; color: #fff; border-color: #2980b9; }
+    .correct { color: #27ae60; font-weight: bold; }
+    .incorrect { color: #c0392b; font-weight: bold; }
+    .question-block { border: 1px solid #ddd; border-radius: 4px; padding: 1rem; margin-bottom: 1rem; }
+    .question-block textarea { width: 100%; box-sizing: border-box; margin-top: .5rem; }
+    .score-banner { font-size: 1.4rem; margin-bottom: 1.5rem; }
   </style>
 </head>
 <body>
@@ -21,6 +27,7 @@
     <a href="{% url 'domain_list' %}">Domains</a>
     <a href="{% url 'subdomain_list' %}">Subdomains</a>
     <a href="{% url 'question_list' %}">Questions</a>
+    <a href="{% url 'quiz_list' %}">Quizzes</a>
   </nav>
   <hr>
   {% block content %}{% endblock %}

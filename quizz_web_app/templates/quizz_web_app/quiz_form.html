@@ -1,0 +1,26 @@
+{% extends "quizz_web_app/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<h1>{{ title }}</h1>
+<form method="post">
+  {% csrf_token %}
+  <p>
+    <label for="{{ form.title.id_for_label }}">Title</label><br>
+    {{ form.title }}
+    {% if form.title.errors %}<ul>{% for e in form.title.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+  </p>
+  <fieldset>
+    <legend>Questions</legend>
+    {% for question in form.questions %}
+    <label style="display:block; margin:.3rem 0;">
+      {{ question.tag }}
+      <strong>{{ question.choice_label }}</strong>
+    </label>
+    {% endfor %}
+    {% if form.questions.errors %}<ul>{% for e in form.questions.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+  </fieldset>
+  <br>
+  <button type="submit">Save</button>
+  <a href="{% url 'quiz_list' %}">Cancel</a>
+</form>
+{% endblock %}
