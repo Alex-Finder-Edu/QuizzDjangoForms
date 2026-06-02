@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Quizz App</title>
+  <style>
+    body { font-family: sans-serif; max-width: 400px; margin: 6rem auto; padding: 0 1rem; }
+    h1 { margin-bottom: 1.5rem; }
+    label { display: block; margin-bottom: .25rem; font-weight: bold; }
+    input[type="text"], input[type="password"] {
+      width: 100%; box-sizing: border-box;
+      padding: .4rem .6rem; margin-bottom: 1rem;
+      border: 1px solid #ccc; border-radius: 3px;
+    }
+    button { padding: .45rem 1.2rem; background: #2980b9; color: #fff; border: none; border-radius: 3px; cursor: pointer; }
+    button:hover { background: #1f6391; }
+    .error { color: #c0392b; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Sign in</h1>
+  <form method="post">
+    {% csrf_token %}
+    {% if form.errors %}
+      <p class="error">Invalid username or password. Please try again.</p>
+    {% endif %}
+    <label for="id_username">Username</label>
+    {{ form.username }}
+    <label for="id_password">Password</label>
+    {{ form.password }}
+    <button type="submit">Log in</button>
+  </form>
+</body>
+</html>

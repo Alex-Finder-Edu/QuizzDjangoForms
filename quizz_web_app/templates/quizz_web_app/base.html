@@ -28,6 +28,10 @@
     <a href="{% url 'subdomain_list' %}">Subdomains</a>
     <a href="{% url 'question_list' %}">Questions</a>
     <a href="{% url 'quiz_list' %}">Quizzes</a>
+    <span style="float:right">
+      {{ user.username }} &nbsp;|&nbsp;
+      <a href="{% url 'logout' %}">Log out</a>
+    </span>
   </nav>
   <hr>
   {% block content %}{% endblock %}
