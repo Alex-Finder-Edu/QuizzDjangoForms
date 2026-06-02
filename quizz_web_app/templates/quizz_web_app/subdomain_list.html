@@ -14,9 +14,11 @@
       <td>{{ subdomain.name }}</td>
       <td>{{ subdomain.domain }}</td>
       <td>{{ subdomain.questions.count }}</td>
-      <td class="actions">
-        <a href="{% url 'subdomain_update' subdomain.pk %}" class="btn">Edit</a>
-        <a href="{% url 'subdomain_delete' subdomain.pk %}" class="btn btn-danger">Delete</a>
+      <td>
+        <div class="actions">
+          <a href="{% url 'subdomain_update' subdomain.pk %}" class="btn">Edit</a>
+          <a href="{% url 'subdomain_delete' subdomain.pk %}" class="btn btn-danger">Delete</a>
+        </div>
       </td>
     </tr>
     {% empty %}
