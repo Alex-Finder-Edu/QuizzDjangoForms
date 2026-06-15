@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quizz App — Dashboard</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><span class="logo">Q</span> Quizz App</div>
+    <nav>
+      <a href="dashboard.html" class="active"><span class="icon">🏠</span> Home</a>
+      <a href="#"><span class="icon">📁</span> Domains</a>
+      <a href="#"><span class="icon">🗂️</span> Subdomains</a>
+      <a href="#"><span class="icon">❓</span> Questions</a>
+      <a href="quiz_list.html"><span class="icon">📝</span> Quizzes</a>
+    </nav>
+    <div class="user">
+      <div class="avatar">AF</div>
+      <div class="meta">
+        alex <br><small>Log out</small>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="page-header">
+      <div>
+        <h1>Welcome back, Alex 👋</h1>
+        <p>Here's an overview of your quiz library.</p>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="card stat-card">
+        <div class="icon">📁</div>
+        <div class="value">5</div>
+        <div class="label">Domains</div>
+      </div>
+      <div class="card stat-card">
+        <div class="icon">🗂️</div>
+        <div class="value">14</div>
+        <div class="label">Subdomains</div>
+      </div>
+      <div class="card stat-card">
+        <div class="icon">❓</div>
+        <div class="value">128</div>
+        <div class="label">Questions</div>
+      </div>
+      <div class="card stat-card">
+        <div class="icon">📝</div>
+        <div class="value">9</div>
+        <div class="label">Quizzes</div>
+      </div>
+    </div>
+
+    <h2 style="font-size:1.1rem; margin-bottom:.75rem;">Quick actions</h2>
+    <div class="actions-grid">
+      <a href="quiz_list.html" class="card action-card">
+        <div class="icon">📝</div>
+        <strong>Create a Quiz</strong>
+        <span>Combine questions into a new quiz</span>
+      </a>
+      <a href="#" class="card action-card">
+        <div class="icon">❓</div>
+        <strong>Add a Question</strong>
+        <span>Add to your question bank</span>
+      </a>
+      <a href="quiz_list.html" class="card action-card">
+        <div class="icon">▶️</div>
+        <strong>Take a Quiz</strong>
+        <span>Practice with an existing quiz</span>
+      </a>
+    </div>
+
+    <h2 style="font-size:1.1rem; margin-bottom:.75rem;">Recent quizzes</h2>
+    <div class="card" style="padding: .5rem 0;">
+      <table style="width:100%; border-collapse: collapse;">
+        <tbody>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:.85rem 1.25rem; font-weight:600;">Python Basics</td>
+            <td style="padding:.85rem 1.25rem; color:var(--text-muted);">12 questions</td>
+            <td style="padding:.85rem 1.25rem; text-align:right;"><a href="quiz_take.html" class="btn btn-sm btn-primary">Take</a></td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border);">
+            <td style="padding:.85rem 1.25rem; font-weight:600;">Django ORM</td>
+            <td style="padding:.85rem 1.25rem; color:var(--text-muted);">8 questions</td>
+            <td style="padding:.85rem 1.25rem; text-align:right;"><a href="quiz_take.html" class="btn btn-sm btn-primary">Take</a></td>
+          </tr>
+          <tr>
+            <td style="padding:.85rem 1.25rem; font-weight:600;">Networking Fundamentals</td>
+            <td style="padding:.85rem 1.25rem; color:var(--text-muted);">15 questions</td>
+            <td style="padding:.85rem 1.25rem; text-align:right;"><a href="quiz_take.html" class="btn btn-sm btn-primary">Take</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</body>
+</html>

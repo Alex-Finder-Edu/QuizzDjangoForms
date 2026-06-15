@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quizz App — Quizzes</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><span class="logo">Q</span> Quizz App</div>
+    <nav>
+      <a href="dashboard.html"><span class="icon">🏠</span> Home</a>
+      <a href="#"><span class="icon">📁</span> Domains</a>
+      <a href="#"><span class="icon">🗂️</span> Subdomains</a>
+      <a href="#"><span class="icon">❓</span> Questions</a>
+      <a href="quiz_list.html" class="active"><span class="icon">📝</span> Quizzes</a>
+    </nav>
+    <div class="user">
+      <div class="avatar">AF</div>
+      <div class="meta">
+        alex <br><small>Log out</small>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="page-header">
+      <div>
+        <h1>Quizzes</h1>
+        <p>Browse, take, or manage your quizzes.</p>
+      </div>
+      <a href="#" class="btn btn-primary">+ Create Quiz</a>
+    </div>
+
+    <div class="toolbar">
+      <input class="search-input" type="text" placeholder="Search quizzes…">
+    </div>
+
+    <div class="quiz-grid">
+      <div class="card quiz-card">
+        <div class="top">
+          <h3>Python Basics</h3>
+          <span class="badge">12 questions</span>
+        </div>
+        <div class="meta">Covers syntax, data types, and control flow.</div>
+        <div class="footer">
+          <a href="quiz_take.html" class="btn btn-sm btn-primary">Take</a>
+          <a href="#" class="btn btn-sm">Edit</a>
+          <a href="#" class="btn btn-sm btn-danger">Delete</a>
+        </div>
+      </div>
+
+      <div class="card quiz-card">
+        <div class="top">
+          <h3>Django ORM</h3>
+          <span class="badge">8 questions</span>
+        </div>
+        <div class="meta">Models, querysets, migrations, and relations.</div>
+        <div class="footer">
+          <a href="quiz_take.html" class="btn btn-sm btn-primary">Take</a>
+          <a href="#" class="btn btn-sm">Edit</a>
+          <a href="#" class="btn btn-sm btn-danger">Delete</a>
+        </div>
+      </div>
+
+      <div class="card quiz-card">
+        <div class="top">
+          <h3>Networking Fundamentals</h3>
+          <span class="badge">15 questions</span>
+        </div>
+        <div class="meta">OSI layers, TCP/IP, DNS, and routing basics.</div>
+        <div class="footer">
+          <a href="quiz_take.html" class="btn btn-sm btn-primary">Take</a>
+          <a href="#" class="btn btn-sm">Edit</a>
+          <a href="#" class="btn btn-sm btn-danger">Delete</a>
+        </div>
+      </div>
+
+      <div class="card quiz-card">
+        <div class="top">
+          <h3>SQL Joins</h3>
+          <span class="badge">6 questions</span>
+        </div>
+        <div class="meta">Inner, outer, left/right joins and subqueries.</div>
+        <div class="footer">
+          <a href="quiz_take.html" class="btn btn-sm btn-primary">Take</a>
+          <a href="#" class="btn btn-sm">Edit</a>
+          <a href="#" class="btn btn-sm btn-danger">Delete</a>
+        </div>
+      </div>
+
+      <div class="card quiz-card">
+        <div class="top">
+          <h3>Linux Command Line</h3>
+          <span class="badge">10 questions</span>
+        </div>
+        <div class="meta">File system, permissions, and shell basics.</div>
+        <div class="footer">
+          <a href="quiz_take.html" class="btn btn-sm btn-primary">Take</a>
+          <a href="#" class="btn btn-sm">Edit</a>
+          <a href="#" class="btn btn-sm btn-danger">Delete</a>
+        </div>
+      </div>
+
+      <div class="card quiz-card" style="align-items:center; justify-content:center; text-align:center; color:var(--text-muted); border-style:dashed;">
+        <div style="font-size:1.6rem;">＋</div>
+        <strong style="color:var(--text);">New Quiz</strong>
+        <span style="font-size:.85rem;">Create a new quiz from your question bank</span>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

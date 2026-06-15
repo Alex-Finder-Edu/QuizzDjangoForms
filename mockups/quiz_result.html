@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quizz App — Results</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><span class="logo">Q</span> Quizz App</div>
+    <nav>
+      <a href="dashboard.html"><span class="icon">🏠</span> Home</a>
+      <a href="#"><span class="icon">📁</span> Domains</a>
+      <a href="#"><span class="icon">🗂️</span> Subdomains</a>
+      <a href="#"><span class="icon">❓</span> Questions</a>
+      <a href="quiz_list.html" class="active"><span class="icon">📝</span> Quizzes</a>
+    </nav>
+    <div class="user">
+      <div class="avatar">AF</div>
+      <div class="meta">
+        alex <br><small>Log out</small>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="page-header">
+      <div>
+        <h1>Python Basics — Results</h1>
+        <p>Here's how you did on this attempt.</p>
+      </div>
+      <a href="quiz_list.html" class="btn">← Back to Quizzes</a>
+    </div>
+
+    <div class="card score-summary">
+      <div class="score-ring" style="--pct: 75;">
+        <div class="inner">
+          <div class="pct">75%</div>
+          <div class="lbl">SCORE</div>
+        </div>
+      </div>
+      <div class="details">
+        <h2>3 / 4 correct</h2>
+        <p>Nice work! Review the question below to fill the gap.</p>
+        <span class="badge badge-pass">Passed</span>
+      </div>
+    </div>
+
+    <div class="card review-card correct">
+      <div class="q-head">
+        <div class="q-text">Q1. What built-in function returns the number of items in a list?</div>
+        <span class="status-pill correct">✓ Correct</span>
+      </div>
+      <div class="answer-row">Your answer: <strong>len()</strong></div>
+    </div>
+
+    <div class="card review-card correct">
+      <div class="q-head">
+        <div class="q-text">Q2. What keyword is used to define a function in Python?</div>
+        <span class="status-pill correct">✓ Correct</span>
+      </div>
+      <div class="answer-row">Your answer: <strong>def</strong></div>
+    </div>
+
+    <div class="card review-card incorrect">
+      <div class="q-head">
+        <div class="q-text">Q3. Which data type is immutable: list, dict, or tuple?</div>
+        <span class="status-pill incorrect">✗ Incorrect</span>
+      </div>
+      <div class="answer-row">Your answer: <strong>list</strong></div>
+      <div class="answer-row">Correct answer: <strong>tuple</strong></div>
+    </div>
+
+    <div class="card review-card correct">
+      <div class="q-head">
+        <div class="q-text">Q4. What operator is used for floor division?</div>
+        <span class="status-pill correct">✓ Correct</span>
+      </div>
+      <div class="answer-row">Your answer: <strong>//</strong></div>
+    </div>
+
+    <div class="results-footer">
+      <a href="quiz_take.html" class="btn btn-primary">Try Again</a>
+      <a href="quiz_list.html" class="btn">Back to Quizzes</a>
+    </div>
+  </main>
+</body>
+</html>

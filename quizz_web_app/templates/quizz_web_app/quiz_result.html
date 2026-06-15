@@ -1,22 +1,53 @@
 {% extends "quizz_web_app/base.html" %}
 {% block title %}Results — {{ quiz.title }}{% endblock %}
 {% block content %}
-<h1>{{ quiz.title }} — Results</h1>
-<p class="score-banner">Score: {{ score }} / {{ total }}</p>
+{% widthratio score total 100 as pct %}
+<div class="page-header">
+  <div>
+    <h1>{{ quiz.title }} — Results</h1>
+    <p>Here's how you did on this attempt.</p>
+  </div>
+  <a href="{% url 'quiz_list' %}" class="btn">← Back to Quizzes</a>
+</div>
+
+<div class="card score-summary">
+  <div class="score-ring" style="--pct: {{ pct }}; {% if pct < 50 %}--ring-color: var(--danger);{% endif %}">
+    <div class="inner">
+      <div class="pct">{{ pct }}%</div>
+      <div class="lbl">SCORE</div>
+    </div>
+  </div>
+  <div class="details">
+    <h2>{{ score }} / {{ total }} correct</h2>
+    {% if pct >= 50 %}
+    <p>Nice work!</p>
+    <span class="badge badge-pass">Passed</span>
+    {% else %}
+    <p>Review the questions below and try again.</p>
+    <span class="badge badge-fail">Needs work</span>
+    {% endif %}
+  </div>
+</div>
 
 {% for result in results %}
-<div class="question-block">
-  <strong>Q{{ forloop.counter }}.</strong> {{ result.question.text }}
-  <p>Your answer: <em>{{ result.user_answer|default:"(no answer)" }}</em></p>
-  {% if result.is_correct %}
-    <p class="correct">Correct!</p>
-  {% else %}
-    <p class="incorrect">Incorrect.</p>
-    <p>Correct answer: <em>{{ result.correct_answer }}</em></p>
+<div class="card review-card {% if result.is_correct %}correct{% else %}incorrect{% endif %}">
+  <div class="q-head">
+    <div class="q-text">Q{{ forloop.counter }}. {{ result.question.text }}</div>
+    {% if result.is_correct %}
+    <span class="status-pill correct">✓ Correct</span>
+    {% else %}
+    <span class="status-pill incorrect">✗ Incorrect</span>
+    {% endif %}
+  </div>
+  <div class="answer-row">Your answer: <strong>{{ result.user_answer|default:"(no answer)" }}</strong></div>
+  {% if not result.is_correct %}
+  <div class="answer-row">Correct answer: <strong>{{ result.correct_answer }}</strong></div>
   {% endif %}
 </div>
 {% endfor %}
 
-<a href="{% url 'quiz_take' quiz.pk %}" class="btn">Try Again</a>
-<a href="{% url 'quiz_list' %}" class="btn">Back to Quizzes</a>
+<div class="results-footer">
+  <a href="{% url 'quiz_take' quiz.pk %}" class="btn btn-primary">Try Again</a>
+  <a href="{% url 'quiz_list' %}" class="btn">Back to Quizzes</a>
+</div>
 {% endblock %}
