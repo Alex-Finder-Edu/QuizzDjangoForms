@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Deploying QuizzDjangoForms to Google Cloud Run</title>
+<style>
+  @page { margin: 2cm; }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #1a1a1a;
+    line-height: 1.5;
+    font-size: 13px;
+  }
+  h1 {
+    font-size: 26px;
+    border-bottom: 3px solid #4285F4;
+    padding-bottom: 8px;
+    margin-top: 0;
+  }
+  h2 {
+    font-size: 18px;
+    color: #1a73e8;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 4px;
+    margin-top: 28px;
+    page-break-after: avoid;
+  }
+  h3 {
+    font-size: 14px;
+    color: #333;
+    margin-top: 18px;
+    page-break-after: avoid;
+  }
+  .subtitle {
+    color: #666;
+    margin-top: -8px;
+    margin-bottom: 24px;
+  }
+  pre {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-left: 4px solid #4285F4;
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 11.5px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    page-break-inside: avoid;
+  }
+  code {
+    font-family: Consolas, "Courier New", monospace;
+    background: #f0f0f0;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 12px;
+  }
+  .step {
+    page-break-inside: avoid;
+  }
+  .note {
+    background: #fff8e1;
+    border-left: 4px solid #fbbc04;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin: 10px 0;
+  }
+  .warn {
+    background: #fce8e6;
+    border-left: 4px solid #ea4335;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin: 10px 0;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10px 0;
+    font-size: 12px;
+  }
+  th, td {
+    border: 1px solid #ddd;
+    padding: 6px 10px;
+    text-align: left;
+  }
+  th {
+    background: #f0f4ff;
+  }
+  .toc {
+    background: #f5f5f5;
+    border-radius: 4px;
+    padding: 12px 24px;
+  }
+  .toc ol {
+    margin: 0;
+  }
+  footer {
+    margin-top: 40px;
+    color: #999;
+    font-size: 11px;
+    border-top: 1px solid #ddd;
+    padding-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Deploying QuizzDjangoForms to Google Cloud Run</h1>
+<p class="subtitle">Step-by-step record of the deployment performed for the QuizzDjangoForms Django project &mdash; Cloud Run + Cloud SQL (Postgres)</p>
+
+<div class="toc">
+<strong>Contents</strong>
+<ol>
+  <li>Prerequisites</li>
+  <li>Google Cloud account &amp; billing setup</li>
+  <li>Create the GCP project</li>
+  <li>Enable required APIs</li>
+  <li>Create the Cloud SQL (Postgres) database</li>
+  <li>Update the Django project for production</li>
+  <li>Add production dependencies</li>
+  <li>Create the Dockerfile</li>
+  <li>Store secrets in Secret Manager</li>
+  <li>Deploy to Cloud Run</li>
+  <li>Create the Django admin superuser</li>
+  <li>Verify the deployment</li>
+  <li>Redeploying after future changes</li>
+</ol>
+</div>
+
+<h2>1. Prerequisites</h2>
+<div class="step">
+<p>Tools used on the local machine:</p>
+<ul>
+  <li><strong>Google Cloud SDK (<code>gcloud</code>)</strong> &mdash; already installed</li>
+  <li><strong>uv</strong> &mdash; Python package/dependency manager used by this project</li>
+  <li>A Google account to own the GCP project (<code>alex.finder.89@gmail.com</code>)</li>
+</ul>
+<p>Confirm <code>gcloud</code> is authenticated with the correct account:</p>
+<pre>gcloud auth list
+gcloud config list</pre>
+<div class="note">
+If the wrong account/project is active, log in with the correct account:
+<pre>gcloud auth login</pre>
+then select it:
+<pre>gcloud config set account alex.finder.89@gmail.com</pre>
+</div>
+</div>
+
+<h2>2. Google Cloud account &amp; billing setup</h2>
+<div class="step">
+<p>Cloud Run and Cloud SQL both require a project linked to an <strong>active (open)</strong> billing account.</p>
+<pre>gcloud billing accounts list</pre>
+<div class="warn">
+If your only billing account shows <code>open: false</code>, it has been closed/disabled.
+Reactivating a billing account or creating a new one requires the Cloud Console UI
+(a payment method must be attached): <code>https://console.cloud.google.com/billing</code>
+</div>
+<p>Once an account shows <code>open: true</code>, note its <code>ACCOUNT_ID</code> (format <code>XXXXXX-XXXXXX-XXXXXX</code>) &mdash; it is needed in the next step.</p>
+</div>
+
+<h2>3. Create the GCP project</h2>
+<div class="step">
+<h3>3.1 Create the project</h3>
+<pre>gcloud projects create quizz-django-forms --name="QuizzDjangoForms"</pre>
+
+<h3>3.2 Set it as the active project and default region</h3>
+<pre>gcloud config set project quizz-django-forms
+gcloud config set run/region europe-west1</pre>
+
+<h3>3.3 Link the billing account</h3>
+<pre>gcloud billing projects link quizz-django-forms \
+  --billing-account=&lt;YOUR_BILLING_ACCOUNT_ID&gt;</pre>
+</div>
+
+<h2>4. Enable required APIs</h2>
+<div class="step">
+<p>Cloud Run, Cloud SQL, Artifact Registry (image storage), Cloud Build (image builds), Secret Manager (secrets) and Compute (networking) APIs are needed:</p>
+<pre>gcloud services enable run.googleapis.com sqladmin.googleapis.com \
+  artifactregistry.googleapis.com cloudbuild.googleapis.com \
+  secretmanager.googleapis.com compute.googleapis.com</pre>
+</div>
+
+<h2>5. Create the Cloud SQL (Postgres) database</h2>
+<div class="step">
+<h3>5.1 Create the instance</h3>
+<p>The smallest Postgres tier (<code>db-f1-micro</code>) requires the <code>ENTERPRISE</code> edition flag:</p>
+<pre>gcloud sql instances create quizz-db \
+  --database-version=POSTGRES_16 \
+  --edition=ENTERPRISE \
+  --tier=db-f1-micro \
+  --region=europe-west1 \
+  --storage-size=10 \
+  --storage-type=HDD \
+  --no-backup</pre>
+<div class="note">This step takes roughly 5&ndash;10 minutes to provision.</div>
+
+<h3>5.2 Create the database and application user</h3>
+<pre>gcloud sql databases create quizzdb --instance=quizz-db
+
+gcloud sql users create quizzuser --instance=quizz-db \
+  --password="&lt;GENERATED_DB_PASSWORD&gt;"</pre>
+
+<h3>5.3 Note the connection name</h3>
+<p>Used later to connect Cloud Run to this instance via a Unix socket:</p>
+<pre>gcloud sql instances describe quizz-db --format="value(connectionName)"
+# &rarr; quizz-django-forms:europe-west1:quizz-db</pre>
+</div>
+
+<h2>6. Update the Django project for production</h2>
+<div class="step">
+<p>Edits made to <code>quizz_web_project/settings.py</code>:</p>
+
+<h3>6.1 Read secrets/config from environment variables</h3>
+<pre>import os
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY',
+    'django-insecure-...',  # local-dev fallback only
+)
+
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+
+ALLOWED_HOSTS = os.environ.get(
+    'ALLOWED_HOSTS', '192.168.100.130,localhost,127.0.0.1'
+).split(',')
+
+CSRF_TRUSTED_ORIGINS = [
+    o for o in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',') if o
+]
+
+# Cloud Run terminates TLS and forwards over HTTP with this header.
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')</pre>
+
+<h3>6.2 Add WhiteNoise for static files</h3>
+<pre>MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    ...
+]</pre>
+
+<h3>6.3 Switch to Postgres when DB_NAME is set (Cloud SQL), else SQLite</h3>
+<pre>if os.environ.get('DB_NAME'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ['DB_NAME'],
+            'USER': os.environ['DB_USER'],
+            'PASSWORD': os.environ['DB_PASSWORD'],
+            'HOST': os.environ['DB_HOST'],
+            'PORT': os.environ.get('DB_PORT', '5432'),
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }</pre>
+
+<h3>6.4 Configure static file storage</h3>
+<pre>STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STORAGES = {
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+    },
+}</pre>
+<div class="note">
+Local development is unaffected: with no <code>DB_NAME</code> env var set and
+<code>DEBUG</code> defaulting to <code>True</code>, <code>runserver.bat</code> keeps using SQLite.
+</div>
+</div>
+
+<h2>7. Add production dependencies</h2>
+<div class="step">
+<p>Added with <code>uv</code> (updates <code>pyproject.toml</code> and <code>uv.lock</code>):</p>
+<pre>uv add gunicorn whitenoise "psycopg[binary]"</pre>
+<table>
+<tr><th>Package</th><th>Purpose</th></tr>
+<tr><td><code>gunicorn</code></td><td>Production WSGI server</td></tr>
+<tr><td><code>whitenoise</code></td><td>Serve static files directly from the app container</td></tr>
+<tr><td><code>psycopg[binary]</code></td><td>PostgreSQL database driver</td></tr>
+</table>
+</div>
+
+<h2>8. Create the Dockerfile</h2>
+<div class="step">
+<h3>8.1 <code>Dockerfile</code></h3>
+<pre>FROM python:3.14-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev --no-install-project
+
+COPY . .
+RUN uv sync --frozen --no-dev
+
+ENV PATH="/app/.venv/bin:$PATH"
+
+RUN python manage.py collectstatic --noinput
+
+EXPOSE 8080
+
+CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn quizz_web_project.wsgi:application --bind 0.0.0.0:8080 --workers 2"]</pre>
+
+<h3>8.2 <code>.dockerignore</code></h3>
+<pre>.venv
+__pycache__
+*.pyc
+db.sqlite3
+db.sqlite3-journal
+.git
+.gitignore
+staticfiles
+*.bat
+README.md
+LICENSE</pre>
+<div class="note">
+Running <code>migrate</code> on every container start is simple and idempotent &mdash; suitable
+for a small app. For larger projects, run migrations as a separate Cloud Run Job/step instead.
+</div>
+</div>
+
+<h2>9. Store secrets in Secret Manager</h2>
+<div class="step">
+<p>Generate a Django secret key and store it, plus the database password:</p>
+<pre>SECRET_KEY=$(uv run python -c \
+  "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())")
+echo -n "$SECRET_KEY" | gcloud secrets create django-secret-key --data-file=-
+
+echo -n "&lt;DB_PASSWORD&gt;" | gcloud secrets create db-password --data-file=-</pre>
+</div>
+
+<h2>10. Deploy to Cloud Run</h2>
+<div class="step">
+<h3>10.1 Build and deploy from source</h3>
+<pre>gcloud run deploy quizz-django-forms \
+  --source . \
+  --region europe-west1 \
+  --allow-unauthenticated \
+  --add-cloudsql-instances quizz-django-forms:europe-west1:quizz-db \
+  --set-env-vars "DEBUG=False,ALLOWED_HOSTS=.run.app,\
+CSRF_TRUSTED_ORIGINS=https://*.run.app,DB_NAME=quizzdb,DB_USER=quizzuser,\
+DB_HOST=/cloudsql/quizz-django-forms:europe-west1:quizz-db" \
+  --set-secrets "SECRET_KEY=django-secret-key:latest,DB_PASSWORD=db-password:latest"</pre>
+<p>This builds the Dockerfile via Cloud Build, pushes the image to Artifact Registry
+(<code>cloud-run-source-deploy</code> repo, created automatically), and deploys it.</p>
+
+<h3>10.2 Grant the Cloud Run service account access to the secrets</h3>
+<div class="warn">
+The first deploy failed with:
+<code>Permission denied on secret ... for Revision service account
+&lt;PROJECT_NUMBER&gt;-compute@developer.gserviceaccount.com</code>
+</div>
+<p>Fix by granting the <strong>Secret Manager Secret Accessor</strong> role to the Compute
+default service account that Cloud Run uses:</p>
+<pre>gcloud projects add-iam-policy-binding quizz-django-forms \
+  --member="serviceAccount:&lt;PROJECT_NUMBER&gt;-compute@developer.gserviceaccount.com" \
+  --role="roles/secretmanager.secretAccessor"</pre>
+
+<h3>10.3 Re-deploy using the already-built image</h3>
+<p>No need to rebuild &mdash; reuse the image from the previous (failed-deploy) build:</p>
+<pre>gcloud builds list --region=europe-west1 --limit=1 --format="value(images)"
+# &rarr; europe-west1-docker.pkg.dev/quizz-django-forms/cloud-run-source-deploy/quizz-django-forms:latest
+
+gcloud run deploy quizz-django-forms \
+  --image europe-west1-docker.pkg.dev/quizz-django-forms/cloud-run-source-deploy/quizz-django-forms:latest \
+  --region europe-west1 \
+  --allow-unauthenticated \
+  --add-cloudsql-instances quizz-django-forms:europe-west1:quizz-db \
+  --set-env-vars "DEBUG=False,ALLOWED_HOSTS=.run.app,\
+CSRF_TRUSTED_ORIGINS=https://*.run.app,DB_NAME=quizzdb,DB_USER=quizzuser,\
+DB_HOST=/cloudsql/quizz-django-forms:europe-west1:quizz-db" \
+  --set-secrets "SECRET_KEY=django-secret-key:latest,DB_PASSWORD=db-password:latest"</pre>
+<p>Result:</p>
+<pre>Service [quizz-django-forms] revision [quizz-django-forms-00002-ttn] has been deployed
+and is serving 100 percent of traffic.
+Service URL: https://quizz-django-forms-530048627940.europe-west1.run.app</pre>
+</div>
+
+<h2>11. Create the Django admin superuser</h2>
+<div class="step">
+<p>Since the container has no interactive shell access, a one-off
+<strong>Cloud Run Job</strong> is used to run <code>createsuperuser --noinput</code>.</p>
+
+<h3>11.1 Store the admin password as a secret</h3>
+<pre>echo -n "&lt;ADMIN_PASSWORD&gt;" | gcloud secrets create django-admin-password --data-file=-</pre>
+
+<h3>11.2 Create the job</h3>
+<pre>gcloud run jobs create create-superuser \
+  --image europe-west1-docker.pkg.dev/quizz-django-forms/cloud-run-source-deploy/quizz-django-forms:latest \
+  --region europe-west1 \
+  --set-cloudsql-instances quizz-django-forms:europe-west1:quizz-db \
+  --set-env-vars "DEBUG=False,DB_NAME=quizzdb,DB_USER=quizzuser,\
+DB_HOST=/cloudsql/quizz-django-forms:europe-west1:quizz-db,\
+DJANGO_SUPERUSER_USERNAME=admin,DJANGO_SUPERUSER_EMAIL=alex.finder.89@gmail.com" \
+  --set-secrets "SECRET_KEY=django-secret-key:latest,DB_PASSWORD=db-password:latest,\
+DJANGO_SUPERUSER_PASSWORD=django-admin-password:latest" \
+  --command "python" \
+  --args "manage.py,createsuperuser,--noinput"</pre>
+
+<h3>11.3 Run it</h3>
+<pre>gcloud run jobs execute create-superuser --region europe-west1 --wait</pre>
+
+<h3>11.4 Clean up the one-off job</h3>
+<pre>gcloud run jobs delete create-superuser --region europe-west1 --quiet</pre>
+<div class="note">
+After logging in as <code>admin</code> and changing the password, delete the temporary secret:
+<pre>gcloud secrets delete django-admin-password</pre>
+</div>
+</div>
+
+<h2>12. Verify the deployment</h2>
+<div class="step">
+<pre>curl -s -o /dev/null -w "%{http_code}\n" https://quizz-django-forms-530048627940.europe-west1.run.app/
+# &rarr; 302 (redirect to login &mdash; expected)
+
+curl -s -o /dev/null -w "%{http_code}\n" https://quizz-django-forms-530048627940.europe-west1.run.app/accounts/login/
+# &rarr; 200
+
+curl -s -o /dev/null -w "%{http_code}\n" https://quizz-django-forms-530048627940.europe-west1.run.app/admin/login/
+# &rarr; 200</pre>
+<p>You can also check the service status at any time:</p>
+<pre>gcloud run services describe quizz-django-forms --region europe-west1 \
+  --format="value(status.url,status.conditions[0].status,status.conditions[0].type)"</pre>
+</div>
+
+<h2>13. Redeploying after future changes</h2>
+<div class="step">
+<p>From the project root, after committing your code changes:</p>
+<pre>gcloud run deploy quizz-django-forms --source . --region europe-west1</pre>
+<p>This rebuilds the Docker image via Cloud Build, pushes it to Artifact Registry, and
+rolls out a new revision. Migrations run automatically on container start.</p>
+
+<h3>Resources created in project <code>quizz-django-forms</code></h3>
+<table>
+<tr><th>Resource</th><th>Name</th><th>Region</th></tr>
+<tr><td>Cloud Run service</td><td>quizz-django-forms</td><td>europe-west1</td></tr>
+<tr><td>Cloud SQL instance (Postgres 16, db-f1-micro)</td><td>quizz-db</td><td>europe-west1</td></tr>
+<tr><td>Cloud SQL database</td><td>quizzdb</td><td>&mdash;</td></tr>
+<tr><td>Cloud SQL user</td><td>quizzuser</td><td>&mdash;</td></tr>
+<tr><td>Artifact Registry repo</td><td>cloud-run-source-deploy</td><td>europe-west1</td></tr>
+<tr><td>Secret Manager secrets</td><td>django-secret-key, db-password</td><td>&mdash;</td></tr>
+<tr><td>Billing account</td><td>Alex Finder Billing Personal 1</td><td>&mdash;</td></tr>
+</table>
+
+<div class="note">
+<strong>Cost note:</strong> Cloud Run scales to zero when idle (minimal cost), but the
+Cloud SQL <code>db-f1-micro</code> instance runs continuously and incurs an hourly charge.
+Stop or delete it when not needed:
+<pre>gcloud sql instances patch quizz-db --activation-policy=NEVER   # stop
+gcloud sql instances delete quizz-db                            # delete permanently</pre>
+</div>
+</div>
+
+<footer>
+Generated for the QuizzDjangoForms project &mdash; Cloud Run deployment performed on 2026-06-11.
+</footer>
+
+</body>
+</html>

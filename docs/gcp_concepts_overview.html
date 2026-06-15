@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Google Cloud Concepts Used in This Deployment</title>
+<style>
+  @page { margin: 2cm; }
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: #1a1a1a;
+    line-height: 1.5;
+    font-size: 13px;
+  }
+  h1 {
+    font-size: 26px;
+    border-bottom: 3px solid #4285F4;
+    padding-bottom: 8px;
+    margin-top: 0;
+  }
+  .subtitle {
+    color: #666;
+    margin-top: -8px;
+    margin-bottom: 24px;
+  }
+  .concept {
+    page-break-inside: avoid;
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #eee;
+  }
+  .concept h2 {
+    font-size: 17px;
+    color: #1a73e8;
+    margin: 0 0 6px 0;
+  }
+  .concept .num {
+    display: inline-block;
+    background: #4285F4;
+    color: #fff;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    text-align: center;
+    line-height: 22px;
+    font-size: 12px;
+    margin-right: 8px;
+  }
+  .concept p {
+    margin: 6px 0;
+  }
+  .concept .role {
+    background: #f5f5f5;
+    border-left: 4px solid #34a853;
+    padding: 6px 10px;
+    border-radius: 4px;
+    margin: 8px 0;
+  }
+  .concept .doc {
+    margin-top: 6px;
+    font-size: 12px;
+  }
+  .concept .doc a {
+    color: #1a73e8;
+    word-break: break-all;
+    text-decoration: none;
+  }
+  code {
+    font-family: Consolas, "Courier New", monospace;
+    background: #f0f0f0;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-size: 12px;
+  }
+  footer {
+    margin-top: 30px;
+    color: #999;
+    font-size: 11px;
+    border-top: 1px solid #ddd;
+    padding-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Google Cloud Concepts Used in This Deployment</h1>
+<p class="subtitle">Reference glossary of every Google Cloud concept/product touched while deploying QuizzDjangoForms to Cloud Run, in the order they were encountered.</p>
+
+<div class="concept">
+<h2><span class="num">1</span>Google Cloud SDK (<code>gcloud</code> CLI)</h2>
+<p>The command-line tool used to manage all Google Cloud resources &mdash; authentication, projects, billing, Cloud SQL, Secret Manager, Cloud Run, etc.</p>
+<div class="role">Used for: every command in this deployment was run through <code>gcloud</code>.</div>
+<div class="doc">Documentation: <a href="https://cloud.google.com/sdk/docs/overview">https://cloud.google.com/sdk/docs/overview</a></div>
+</div>
+
+<div class="concept">
+<h2><span class="num">2</span>Authentication &amp; Accounts (<code>gcloud auth</code>)</h2>
+<p>Controls which Google identity (user account or service account) <code>gcloud</code> acts as, and which one is "active" for subsequent commands.</p>
+<div class="role">Used for: switching from the work account (<code>afinder@mozilla.com</code>) to the personal account (<code>alex.finder.89@gmail.com</code>) via <code>gcloud auth login</code> and <code>gcloud config set account</code>.</div>
+<div class="doc">Documentation: <a href="https://cloud.google.com/sdk/gcloud/reference/auth">https://cloud.google.com/sdk/gcloud/reference/auth</a></div>
+</div>
+
+<div class="concept">
+<h2><span class="num">3</span>Billing Accounts</h2>
+<p>A billing account links a payment method to one or more projects. A project cannot use most paid services (Cloud Run, Cloud SQL, etc.) until it is linked to an <strong>open</strong> billing account.</p>
+<div class="role">Used for: checking billing account status with <code>gcloud billing accounts list</code> and linking the new project with <code>gcloud billing projects link</code>.</div>
+<div class="doc">Documentation: <a href="https://cloud.google.com/billing/docs/how-to/manage-billing-account">https://cloud.google.com/billing/docs/how-to/manage-billing-account</a></div>
+</div>
+
+<div class="concept">
+<h2><span class="num">4</span>Projects (Resource Manager)</h2>
+<p>A project is the top-level container for Google Cloud resources &mdash; it groups billing, IAM permissions, APIs, and all created resources (Cloud Run services, databases, secrets, etc.) under one ID.</p>
+<div class="role">Used for: created the <code>quizz-django-forms</code> project with <code>gcloud projects create</code> to host all resources for this app.</div>
+<div class="doc">Documentation: <a href="https://cloud.google.com/resource-manager/docs/creating-managing-projects">https://cloud.google.com/resource-manager/docs/creating-managing-projects</a></div>
+</div>
+
+<div class="concept">
+<h2><span class="num">5</span>Identity and Access Management (IAM)</h2>
+<p>Controls <em>who</em> (users, groups, or service accounts) can do <em>what</em> (roles/permissions) on <em>which</em> resources. Every Google Cloud resource access decision goes through IAM.</p>
+<div class="role">Used for: granting the Cloud Run service's default <strong>Compute Engine service account</strong> the <code>roles/secretmanager.secretAccessor</code> role so it could read secrets at runtime (<code>gcloud projects add-iam-policy-binding</code>).</div>
+<div class="doc">Documentation: <a href="https://cloud.google.com/iam/docs/overview">https://cloud.google.com/iam/docs/overview</a></div>
+</div>
+
+<div class="concept">
+<h2><span class="num">6</span>Enabling APIs (Service Usage)</h2>
+<p>Each Google Cloud product exposes its functionality as an API that must be explicitly enabled per project before it can be used.</p>
+<div class="role">Used for: enabling <code>run</code>, <code>sqladmin</code>, <code>artifactregistry</code>, <code>cloudbuild</code>, <code>secretmanager</code>, and <code>compute</code> APIs via <code>gcloud services enable</code>.</div>
+<div class="doc">Documentation: <a href="https://cloud.google.com/service-usage/docs/enable-disable">https://cloud.google.com/service-usage/docs/enable-disable</a></div>
+</div>
+
+<div class="concept">
+<h2><span class="num">7</span>Cloud SQL for PostgreSQL</h2>
+<p>A fully managed relational database service. Provides a persistent PostgreSQL instance so application data survives container restarts and redeploys (unlike SQLite on Cloud Run's ephemeral filesystem).</p>
+<div class="role">Used for: created the <code>quizz-db</code> instance (Postgres 16, <code>db-f1-micro</code> tier), plus the <code>quizzdb</code> database and <code>quizzuser</code> user that the Django app connects to.</div>
+<div class="doc">Documentation: <a href="https://cloud.google.com/sql/docs/postgres/create-instance">https://cloud.google.com/sql/docs/postgres/create-instance</a></div>
+</div>
+
+<div class="concept">
+<h2><span class="num">8</span>Secret Manager</h2>
+<p>A secure store for API keys, passwords, and other sensitive configuration. Secrets are versioned and access is controlled via IAM, rather than being baked into source code or images.</p>
+<div class="role">Used for: storing the Django <code>SECRET_KEY</code>, the Cloud SQL database password, and the Django admin password, then injecting them into Cloud Run as environment variables via <code>--set-secrets</code>.</div>
+<div class="doc">Documentation: <a href="https://cloud.google.com/secret-manager/docs/overview">https://cloud.google.com/secret-manager/docs/overview</a></div>
+</div>
+
+<div class="concept">
+<h2><span class="num">9</span>Artifact Registry</h2>
+<p>A managed repository for container images (and other build artifacts). Cloud Run pulls the application's container image from here.</p>
+<div class="role">Used for: the <code>cloud-run-source-deploy</code> Docker repository was auto-created in <code>europe-west1</code> to store the built <code>quizz-django-forms</code> image.</div>
+<div class="doc">Documentation: <a href="https://cloud.google.com/artifact-registry/docs/overview">https://cloud.google.com/artifact-registry/docs/overview</a></div>
+</div>
+
+<div class="concept">
+<h2><span class="num">10</span>Cloud Build</h2>
+<p>A managed CI/CD service that builds artifacts &mdash; in this case, building a Docker image from a <code>Dockerfile</code> and pushing it to Artifact Registry.</p>
+<div class="role">Used for: <code>gcloud run deploy --source .</code> automatically uploaded the source and ran a Cloud Build job to build the container image.</div>
+<div class="doc">Documentation: <a href="https://cloud.google.com/build/docs/overview">https://cloud.google.com/build/docs/overview</a></div>
+</div>
+
+<div class="concept">
+<h2><span class="num">11</span>Cloud Run (Services)</h2>
+<p>A serverless platform for running stateless containers. Automatically scales (including to zero) based on incoming HTTP traffic, and provides a public HTTPS URL.</p>
+<div class="role">Used for: hosting the Django app itself &mdash; the <code>quizz-django-forms</code> service, deployed via <code>gcloud run deploy</code>, running <code>gunicorn</code> behind Google's managed HTTPS load balancer.</div>
+<div class="doc">Documentation: <a href="https://cloud.google.com/run/docs/overview/what-is-cloud-run">https://cloud.google.com/run/docs/overview/what-is-cloud-run</a></div>
+</div>
+
+<div class="concept">
+<h2><span class="num">12</span>Connecting Cloud Run to Cloud SQL</h2>
+<p>Cloud Run can connect to a Cloud SQL instance through a secure Unix domain socket (<code>/cloudsql/&lt;CONNECTION_NAME&gt;</code>) without needing a public IP or manually managing the Cloud SQL Auth Proxy.</p>
+<div class="role">Used for: the <code>--add-cloudsql-instances</code> flag attached <code>quizz-django-forms:europe-west1:quizz-db</code> to the Cloud Run service, and Django's <code>DB_HOST</code> env var pointed to the corresponding socket path.</div>
+<div class="doc">Documentation: <a href="https://cloud.google.com/sql/docs/postgres/connect-run">https://cloud.google.com/sql/docs/postgres/connect-run</a></div>
+</div>
+
+<div class="concept">
+<h2><span class="num">13</span>Cloud Run Jobs</h2>
+<p>Unlike Cloud Run <em>services</em> (which respond to HTTP requests), Cloud Run <em>jobs</em> run a container to completion for a finite task and then exit &mdash; ideal for one-off scripts.</p>
+<div class="role">Used for: the <code>create-superuser</code> job ran <code>python manage.py createsuperuser --noinput</code> once against the production database, then was deleted.</div>
+<div class="doc">Documentation: <a href="https://cloud.google.com/run/docs/create-jobs">https://cloud.google.com/run/docs/create-jobs</a></div>
+</div>
+
+<footer>
+Generated for the QuizzDjangoForms project &mdash; companion reference to the Cloud Run deployment tutorial, 2026-06-11.
+</footer>
+
+</body>
+</html>
