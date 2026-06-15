@@ -1,29 +1,36 @@
 {% extends "quizz_web_app/base.html" %}
 {% block title %}Subdomains{% endblock %}
 {% block content %}
-<h1>Subdomains</h1>
-<a href="{% url 'subdomain_create' %}" class="btn">+ Add Subdomain</a>
-<br><br>
-<table>
-  <thead>
-    <tr><th>Name</th><th>Domain</th><th>Questions</th><th>Actions</th></tr>
-  </thead>
-  <tbody>
-    {% for subdomain in subdomains %}
-    <tr>
-      <td>{{ subdomain.name }}</td>
-      <td>{{ subdomain.domain }}</td>
-      <td>{{ subdomain.questions.count }}</td>
-      <td>
-        <div class="actions">
-          <a href="{% url 'subdomain_update' subdomain.pk %}" class="btn">Edit</a>
-          <a href="{% url 'subdomain_delete' subdomain.pk %}" class="btn btn-danger">Delete</a>
-        </div>
-      </td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="4">No subdomains yet.</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="page-header">
+  <div>
+    <h1>Subdomains</h1>
+    <p>Sub-topics that group related questions within a domain.</p>
+  </div>
+  <a href="{% url 'subdomain_create' %}" class="btn btn-primary">+ Add Subdomain</a>
+</div>
+
+<div class="card table-card">
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Domain</th><th>Questions</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for subdomain in subdomains %}
+      <tr>
+        <td>{{ subdomain.name }}</td>
+        <td>{{ subdomain.domain }}</td>
+        <td>{{ subdomain.questions.count }}</td>
+        <td>
+          <div class="actions">
+            <a href="{% url 'subdomain_update' subdomain.pk %}" class="btn btn-sm">Edit</a>
+            <a href="{% url 'subdomain_delete' subdomain.pk %}" class="btn btn-sm btn-danger">Delete</a>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4" class="empty-state">No subdomains yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

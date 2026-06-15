@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quizz App — Python Basics</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><span class="logo">Q</span> Quizz App</div>
+    <nav>
+      <a href="dashboard.html"><span class="icon">🏠</span> Home</a>
+      <a href="#"><span class="icon">📁</span> Domains</a>
+      <a href="#"><span class="icon">🗂️</span> Subdomains</a>
+      <a href="#"><span class="icon">❓</span> Questions</a>
+      <a href="quiz_list.html" class="active"><span class="icon">📝</span> Quizzes</a>
+    </nav>
+    <div class="user">
+      <div class="avatar">AF</div>
+      <div class="meta">
+        alex <br><small>Log out</small>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="page-header">
+      <div>
+        <h1>Python Basics</h1>
+        <p>Answer each question, then submit to see your score.</p>
+      </div>
+      <a href="quiz_list.html" class="btn">← Back to Quizzes</a>
+    </div>
+
+    <div class="card progress-card">
+      <div class="progress-bar"><div style="width: 25%;"></div></div>
+      <div class="count">1 of 4 answered</div>
+    </div>
+
+    <form method="post">
+      <div class="card question-card">
+        <div class="q-head">
+          <div class="q-number">1</div>
+          <div>
+            <div class="q-text">What built-in function returns the number of items in a list?</div>
+            <div class="q-meta">Python Basics · Data structures</div>
+          </div>
+        </div>
+        <textarea name="answer_1" rows="3" placeholder="Your answer…">len()</textarea>
+      </div>
+
+      <div class="card question-card">
+        <div class="q-head">
+          <div class="q-number">2</div>
+          <div>
+            <div class="q-text">What keyword is used to define a function in Python?</div>
+            <div class="q-meta">Python Basics · Syntax</div>
+          </div>
+        </div>
+        <textarea name="answer_2" rows="3" placeholder="Your answer…"></textarea>
+      </div>
+
+      <div class="card question-card">
+        <div class="q-head">
+          <div class="q-number">3</div>
+          <div>
+            <div class="q-text">Which data type is immutable: list, dict, or tuple?</div>
+            <div class="q-meta">Python Basics · Data structures</div>
+          </div>
+        </div>
+        <textarea name="answer_3" rows="3" placeholder="Your answer…"></textarea>
+      </div>
+
+      <div class="card question-card">
+        <div class="q-head">
+          <div class="q-number">4</div>
+          <div>
+            <div class="q-text">What operator is used for floor division?</div>
+            <div class="q-meta">Python Basics · Operators</div>
+          </div>
+        </div>
+        <textarea name="answer_4" rows="3" placeholder="Your answer…"></textarea>
+      </div>
+
+      <div class="submit-bar">
+        <button type="submit" class="btn btn-primary">Submit Answers</button>
+      </div>
+    </form>
+  </main>
+</body>
+</html>

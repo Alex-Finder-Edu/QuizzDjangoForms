@@ -1,11 +1,52 @@
 {% extends "quizz_web_app/base.html" %}
 {% block title %}Quizz App — Home{% endblock %}
 {% block content %}
-<h1>Quizz App</h1>
-<ul>
-  <li>{{ domain_count }} domain{{ domain_count|pluralize }}</li>
-  <li>{{ subdomain_count }} subdomain{{ subdomain_count|pluralize }}</li>
-  <li>{{ question_count }} question{{ question_count|pluralize }}</li>
-  <li>{{ quiz_count }} quiz{{ quiz_count|pluralize:"zes" }}</li>
-</ul>
+<div class="page-header">
+  <div>
+    <h1>Welcome back, {{ user.username }} 👋</h1>
+    <p>Here's an overview of your quiz library.</p>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <a href="{% url 'domain_list' %}" class="card stat-card">
+    <div class="icon">📁</div>
+    <div class="value">{{ domain_count }}</div>
+    <div class="label">Domain{{ domain_count|pluralize }}</div>
+  </a>
+  <a href="{% url 'subdomain_list' %}" class="card stat-card">
+    <div class="icon">🗂️</div>
+    <div class="value">{{ subdomain_count }}</div>
+    <div class="label">Subdomain{{ subdomain_count|pluralize }}</div>
+  </a>
+  <a href="{% url 'question_list' %}" class="card stat-card">
+    <div class="icon">❓</div>
+    <div class="value">{{ question_count }}</div>
+    <div class="label">Question{{ question_count|pluralize }}</div>
+  </a>
+  <a href="{% url 'quiz_list' %}" class="card stat-card">
+    <div class="icon">📝</div>
+    <div class="value">{{ quiz_count }}</div>
+    <div class="label">Quiz{{ quiz_count|pluralize:"zes" }}</div>
+  </a>
+</div>
+
+<h2 class="section-heading">Quick actions</h2>
+<div class="actions-grid">
+  <a href="{% url 'quiz_create' %}" class="card action-card">
+    <div class="icon">📝</div>
+    <strong>Create a Quiz</strong>
+    <span>Combine questions into a new quiz</span>
+  </a>
+  <a href="{% url 'question_create' %}" class="card action-card">
+    <div class="icon">❓</div>
+    <strong>Add a Question</strong>
+    <span>Add to your question bank</span>
+  </a>
+  <a href="{% url 'quiz_list' %}" class="card action-card">
+    <div class="icon">▶️</div>
+    <strong>Take a Quiz</strong>
+    <span>Practice with an existing quiz</span>
+  </a>
+</div>
 {% endblock %}

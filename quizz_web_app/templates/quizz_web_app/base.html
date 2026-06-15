@@ -1,39 +1,32 @@
+{% load static quizz_extras %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}Quizz App{% endblock %}</title>
-  <style>
-    body { font-family: sans-serif; max-width: 860px; margin: 2rem auto; padding: 0 1rem; }
-    nav a { margin-right: 1rem; }
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #ccc; padding: .5rem .75rem; text-align: left; }
-    th { background: #f4f4f4; }
-    .actions { display: flex; gap: .5rem; align-items: center; }
-    .btn { display: inline-block; padding: .35rem .75rem; text-decoration: none; border: 1px solid #999; border-radius: 3px; white-space: nowrap; }
-    .btn-danger { background: #c0392b; color: #fff; border-color: #c0392b; }
-    .btn-primary { background: #2980b9; color: #fff; border-color: #2980b9; }
-    .correct { color: #27ae60; font-weight: bold; }
-    .incorrect { color: #c0392b; font-weight: bold; }
-    .question-block { border: 1px solid #ddd; border-radius: 4px; padding: 1rem; margin-bottom: 1rem; }
-    .question-block textarea { width: 100%; box-sizing: border-box; margin-top: .5rem; }
-    .score-banner { font-size: 1.4rem; margin-bottom: 1.5rem; }
-  </style>
+  <link rel="stylesheet" href="{% static 'quizz_web_app/styles.css' %}">
 </head>
 <body>
-  <nav>
-    <a href="{% url 'index' %}">Home</a>
-    <a href="{% url 'domain_list' %}">Domains</a>
-    <a href="{% url 'subdomain_list' %}">Subdomains</a>
-    <a href="{% url 'question_list' %}">Questions</a>
-    <a href="{% url 'quiz_list' %}">Quizzes</a>
-    <span style="float:right">
-      {{ user.username }} &nbsp;|&nbsp;
-      <a href="{% url 'logout' %}">Log out</a>
-    </span>
-  </nav>
-  <hr>
-  {% block content %}{% endblock %}
+  <aside class="sidebar">
+    <a href="{% url 'index' %}" class="brand"><span class="logo">Q</span> Quizz App</a>
+    <nav>
+      <a href="{% url 'index' %}" class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}"><span class="icon">🏠</span> Home</a>
+      <a href="{% url 'domain_list' %}" class="{% if request.resolver_match.url_name|startswith:'domain' %}active{% endif %}"><span class="icon">📁</span> Domains</a>
+      <a href="{% url 'subdomain_list' %}" class="{% if request.resolver_match.url_name|startswith:'subdomain' %}active{% endif %}"><span class="icon">🗂️</span> Subdomains</a>
+      <a href="{% url 'question_list' %}" class="{% if request.resolver_match.url_name|startswith:'question' %}active{% endif %}"><span class="icon">❓</span> Questions</a>
+      <a href="{% url 'quiz_list' %}" class="{% if request.resolver_match.url_name|startswith:'quiz' %}active{% endif %}"><span class="icon">📝</span> Quizzes</a>
+    </nav>
+    <div class="user">
+      <div class="avatar">{{ user.username|slice:":2" }}</div>
+      <div class="meta">
+        <div class="username">{{ user.username }}</div>
+        <a href="{% url 'logout' %}">Log out</a>
+      </div>
+    </div>
+  </aside>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
 </body>
 </html>

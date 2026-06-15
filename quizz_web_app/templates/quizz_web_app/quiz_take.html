@@ -1,21 +1,62 @@
 {% extends "quizz_web_app/base.html" %}
 {% block title %}{{ quiz.title }}{% endblock %}
 {% block content %}
-<h1>{{ quiz.title }}</h1>
-<form method="post">
+<div class="page-header">
+  <div>
+    <h1>{{ quiz.title }}</h1>
+    <p>Answer each question, then submit to see your score.</p>
+  </div>
+  <a href="{% url 'quiz_list' %}" class="btn">← Back to Quizzes</a>
+</div>
+
+{% if questions %}
+<div class="card progress-card">
+  <div class="progress-bar"><div id="progress-fill" style="width: 0%;"></div></div>
+  <div class="count" id="progress-count">0 of {{ questions|length }} answered</div>
+</div>
+
+<form method="post" id="quiz-form">
   {% csrf_token %}
   {% for question in questions %}
-  <div class="question-block">
-    <strong>Q{{ forloop.counter }}.</strong> {{ question.text }}
+  <div class="card question-card">
+    <div class="q-head">
+      <div class="q-number">{{ forloop.counter }}</div>
+      <div>
+        <div class="q-text">{{ question.text }}</div>
+        <div class="q-meta">{{ question.subdomain.domain.name }} · {{ question.subdomain.name }}</div>
+      </div>
+    </div>
     <textarea name="answer_{{ question.pk }}" rows="3" placeholder="Your answer…"></textarea>
   </div>
-  {% empty %}
-  <p>This quiz has no questions yet.</p>
   {% endfor %}
-  {% if questions %}
-  <button type="submit" class="btn btn-primary">Submit Answers</button>
-  {% endif %}
+
+  <div class="submit-bar">
+    <button type="submit" class="btn btn-primary">Submit Answers</button>
+  </div>
 </form>
-<br>
-<a href="{% url 'quiz_list' %}">Back to quizzes</a>
+
+<script>
+  (function () {
+    var textareas = document.querySelectorAll('#quiz-form textarea');
+    var fill = document.getElementById('progress-fill');
+    var count = document.getElementById('progress-count');
+    var total = textareas.length;
+
+    function update() {
+      var answered = 0;
+      textareas.forEach(function (t) {
+        if (t.value.trim() !== '') answered++;
+      });
+      fill.style.width = (total ? (answered / total) * 100 : 0) + '%';
+      count.textContent = answered + ' of ' + total + ' answered';
+    }
+
+    textareas.forEach(function (t) {
+      t.addEventListener('input', update);
+    });
+  })();
+</script>
+{% else %}
+<div class="card empty-state">This quiz has no questions yet.</div>
+{% endif %}
 {% endblock %}

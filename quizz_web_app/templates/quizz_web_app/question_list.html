@@ -1,30 +1,37 @@
 {% extends "quizz_web_app/base.html" %}
 {% block title %}Questions{% endblock %}
 {% block content %}
-<h1>Questions</h1>
-<a href="{% url 'question_create' %}" class="btn">+ Add Question</a>
-<br><br>
-<table>
-  <thead>
-    <tr><th>Question</th><th>Subdomain</th><th>Domain</th><th>Correct Answer</th><th>Actions</th></tr>
-  </thead>
-  <tbody>
-    {% for question in questions %}
-    <tr>
-      <td>{{ question.text }}</td>
-      <td>{{ question.subdomain.name }}</td>
-      <td>{{ question.subdomain.domain.name }}</td>
-      <td>{{ question.correct_answer }}</td>
-      <td>
-        <div class="actions">
-          <a href="{% url 'question_update' question.pk %}" class="btn">Edit</a>
-          <a href="{% url 'question_delete' question.pk %}" class="btn btn-danger">Delete</a>
-        </div>
-      </td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="5">No questions yet.</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="page-header">
+  <div>
+    <h1>Questions</h1>
+    <p>Your question bank, organized by domain and subdomain.</p>
+  </div>
+  <a href="{% url 'question_create' %}" class="btn btn-primary">+ Add Question</a>
+</div>
+
+<div class="card table-card">
+  <table>
+    <thead>
+      <tr><th>Question</th><th>Subdomain</th><th>Domain</th><th>Correct Answer</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for question in questions %}
+      <tr>
+        <td>{{ question.text }}</td>
+        <td>{{ question.subdomain.name }}</td>
+        <td>{{ question.subdomain.domain.name }}</td>
+        <td>{{ question.correct_answer }}</td>
+        <td>
+          <div class="actions">
+            <a href="{% url 'question_update' question.pk %}" class="btn btn-sm">Edit</a>
+            <a href="{% url 'question_delete' question.pk %}" class="btn btn-sm btn-danger">Delete</a>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" class="empty-state">No questions yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}
