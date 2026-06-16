@@ -1,0 +1,61 @@
+{% extends "quizz_web_app/base.html" %}
+{% block title %}{{ course.title }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>{{ course.title }}</h1>
+    <p>{{ course.domain.name }} — {{ course.subdomain.name }}</p>
+  </div>
+  <div class="actions">
+    <a href="{% url 'course_update' course.pk %}" class="btn">Edit Course</a>
+    <a href="{% url 'course_delete' course.pk %}" class="btn btn-danger">Delete</a>
+  </div>
+</div>
+
+<div class="card form-card" style="margin-bottom:1.5rem">
+  <dl style="display:grid;grid-template-columns:max-content 1fr;gap:.4rem 1.5rem;margin:0">
+    <dt>Domain</dt><dd>{{ course.domain.name }}</dd>
+    <dt>Subdomain</dt><dd>{{ course.subdomain.name }}</dd>
+    <dt>Date created</dt><dd>{{ course.date_created }}</dd>
+    <dt>URL</dt><dd>{% if course.url %}<a href="{{ course.url }}" target="_blank" rel="noopener">{{ course.url }}</a>{% else %}—{% endif %}</dd>
+    {% if course.course_info %}
+    <dt>Platform</dt><dd>{{ course.course_info.platform_name|default:"—" }}</dd>
+    <dt>Source title</dt><dd>{{ course.course_info.title }}</dd>
+    <dt>Source URL</dt><dd>{% if course.course_info.url %}<a href="{{ course.course_info.url }}" target="_blank" rel="noopener">{{ course.course_info.url }}</a>{% else %}—{% endif %}</dd>
+    {% endif %}
+  </dl>
+</div>
+
+<div class="page-header" style="margin-top:2rem">
+  <h2>Paragraphs</h2>
+  <a href="{% url 'paragraph_create' course.pk %}" class="btn btn-primary">+ Add Paragraph</a>
+</div>
+
+<div class="card table-card">
+  <table>
+    <thead>
+      <tr><th>#</th><th>Text</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for p in course.paragraphs.all %}
+      <tr>
+        <td>{{ p.paragraph_index }}</td>
+        <td style="white-space:pre-wrap">{{ p.paragraph_text }}</td>
+        <td>
+          <div class="actions">
+            <a href="{% url 'paragraph_update' course.pk p.pk %}" class="btn btn-sm">Edit</a>
+            <a href="{% url 'paragraph_delete' course.pk p.pk %}" class="btn btn-sm btn-danger">Delete</a>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="3" class="empty-state">No paragraphs yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div style="margin-top:1rem">
+  <a href="{% url 'course_list' %}" class="btn">← Back to Courses</a>
+</div>
+{% endblock %}

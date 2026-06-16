@@ -28,4 +28,22 @@ urlpatterns = [
     path("quizzes/<int:pk>/edit/", views.quiz_update, name="quiz_update"),
     path("quizzes/<int:pk>/delete/", views.quiz_delete, name="quiz_delete"),
     path("quizzes/<int:pk>/take/", views.quiz_take, name="quiz_take"),
+
+    # CourseInfo
+    path("course-info/", views.course_info_list, name="courseinfo_list"),
+    path("course-info/add/", views.course_info_create, name="courseinfo_create"),
+    path("course-info/<int:pk>/edit/", views.course_info_update, name="courseinfo_update"),
+    path("course-info/<int:pk>/delete/", views.course_info_delete, name="courseinfo_delete"),
+
+    # Course
+    path("courses/", views.course_list, name="course_list"),
+    path("courses/add/", views.course_create, name="course_create"),
+    path("courses/<int:pk>/", views.course_detail, name="course_detail"),
+    path("courses/<int:pk>/edit/", views.course_update, name="course_update"),
+    path("courses/<int:pk>/delete/", views.course_delete, name="course_delete"),
+
+    # CourseParagraph
+    path("courses/<int:course_pk>/paragraphs/add/", views.paragraph_create, name="paragraph_create"),
+    path("courses/<int:course_pk>/paragraphs/<int:pk>/edit/", views.paragraph_update, name="paragraph_update"),
+    path("courses/<int:course_pk>/paragraphs/<int:pk>/delete/", views.paragraph_delete, name="paragraph_delete"),
 ]
