@@ -1,0 +1,37 @@
+{% extends "quizz_web_app/base.html" %}
+{% block title %}Course Info{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Course Info</h1>
+    <p>Platform sources linked to courses.</p>
+  </div>
+  <a href="{% url 'courseinfo_create' %}" class="btn btn-primary">+ Add Course Info</a>
+</div>
+
+<div class="card table-card">
+  <table>
+    <thead>
+      <tr><th>Title</th><th>Platform</th><th>URL</th><th>Courses</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for ci in course_infos %}
+      <tr>
+        <td>{{ ci.title }}</td>
+        <td>{{ ci.platform_name|default:"—" }}</td>
+        <td>{% if ci.url %}<a href="{{ ci.url }}" target="_blank" rel="noopener">Link</a>{% else %}—{% endif %}</td>
+        <td>{{ ci.courses.count }}</td>
+        <td>
+          <div class="actions">
+            <a href="{% url 'courseinfo_update' ci.pk %}" class="btn btn-sm">Edit</a>
+            <a href="{% url 'courseinfo_delete' ci.pk %}" class="btn btn-sm btn-danger">Delete</a>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" class="empty-state">No course info records yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

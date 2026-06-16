@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-from .models import Domain, Subdomain, Question, Quiz
-from .forms import DomainForm, SubdomainForm, QuestionForm, QuizForm
+from .models import Domain, Subdomain, Question, Quiz, CourseInfo, Course, CourseParagraph
+from .forms import DomainForm, SubdomainForm, QuestionForm, QuizForm, CourseInfoForm, CourseForm, CourseParagraphForm
 
 
 @login_required
@@ -11,6 +12,7 @@ def index(request):
         "subdomain_count": Subdomain.objects.count(),
         "question_count": Question.objects.count(),
         "quiz_count": Quiz.objects.count(),
+        "course_count": Course.objects.count(),
     })
 
 
@@ -183,3 +185,122 @@ def quiz_take(request, pk):
         })
 
     return render(request, "quizz_web_app/quiz_take.html", {"quiz": quiz, "questions": questions})
+
+
+# --- CourseInfo ---
+
+@login_required
+def course_info_list(request):
+    course_infos = CourseInfo.objects.all()
+    return render(request, "quizz_web_app/course_info_list.html", {"course_infos": course_infos})
+
+
+@login_required
+def course_info_create(request):
+    form = CourseInfoForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect("courseinfo_list")
+    return render(request, "quizz_web_app/form.html", {"form": form, "title": "Add Course Info"})
+
+
+@login_required
+def course_info_update(request, pk):
+    course_info = get_object_or_404(CourseInfo, pk=pk)
+    form = CourseInfoForm(request.POST or None, instance=course_info)
+    if form.is_valid():
+        form.save()
+        return redirect("courseinfo_list")
+    return render(request, "quizz_web_app/form.html", {"form": form, "title": "Edit Course Info"})
+
+
+@login_required
+def course_info_delete(request, pk):
+    course_info = get_object_or_404(CourseInfo, pk=pk)
+    if request.method == "POST":
+        course_info.delete()
+        return redirect("courseinfo_list")
+    return render(request, "quizz_web_app/confirm_delete.html", {"object": course_info, "cancel_url": "courseinfo_list"})
+
+
+# --- Course ---
+
+@login_required
+def course_list(request):
+    courses = Course.objects.select_related("domain", "subdomain", "course_info").all()
+    return render(request, "quizz_web_app/course_list.html", {"courses": courses})
+
+
+@login_required
+def course_create(request):
+    form = CourseForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect("course_list")
+    return render(request, "quizz_web_app/form.html", {"form": form, "title": "Add Course"})
+
+
+@login_required
+def course_update(request, pk):
+    course = get_object_or_404(Course, pk=pk)
+    form = CourseForm(request.POST or None, instance=course)
+    if form.is_valid():
+        form.save()
+        return redirect("course_detail", pk=pk)
+    return render(request, "quizz_web_app/form.html", {"form": form, "title": "Edit Course"})
+
+
+@login_required
+def course_delete(request, pk):
+    course = get_object_or_404(Course, pk=pk)
+    if request.method == "POST":
+        course.delete()
+        return redirect("course_list")
+    return render(request, "quizz_web_app/confirm_delete.html", {"object": course, "cancel_url": "course_list"})
+
+
+@login_required
+def course_detail(request, pk):
+    course = get_object_or_404(
+        Course.objects.select_related("domain", "subdomain", "course_info").prefetch_related("paragraphs"),
+        pk=pk,
+    )
+    return render(request, "quizz_web_app/course_detail.html", {"course": course})
+
+
+# --- CourseParagraph ---
+
+@login_required
+def paragraph_create(request, course_pk):
+    course = get_object_or_404(Course, pk=course_pk)
+    form = CourseParagraphForm(request.POST or None)
+    if form.is_valid():
+        paragraph = form.save(commit=False)
+        paragraph.course = course
+        paragraph.save()
+        return redirect("course_detail", pk=course_pk)
+    return render(request, "quizz_web_app/form.html", {"form": form, "title": f"Add Paragraph — {course}"})
+
+
+@login_required
+def paragraph_update(request, course_pk, pk):
+    course = get_object_or_404(Course, pk=course_pk)
+    paragraph = get_object_or_404(CourseParagraph, pk=pk, course=course)
+    form = CourseParagraphForm(request.POST or None, instance=paragraph)
+    if form.is_valid():
+        form.save()
+        return redirect("course_detail", pk=course_pk)
+    return render(request, "quizz_web_app/form.html", {"form": form, "title": f"Edit Paragraph — {course}"})
+
+
+@login_required
+def paragraph_delete(request, course_pk, pk):
+    course = get_object_or_404(Course, pk=course_pk)
+    paragraph = get_object_or_404(CourseParagraph, pk=pk, course=course)
+    if request.method == "POST":
+        paragraph.delete()
+        return redirect("course_detail", pk=course_pk)
+    return render(request, "quizz_web_app/confirm_delete.html", {
+        "object": paragraph,
+        "cancel_href": reverse("course_detail", args=[course_pk]),
+    })

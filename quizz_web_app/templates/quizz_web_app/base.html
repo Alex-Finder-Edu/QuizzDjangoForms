@@ -16,6 +16,8 @@
       <a href="{% url 'subdomain_list' %}" class="{% if request.resolver_match.url_name|startswith:'subdomain' %}active{% endif %}"><span class="icon">🗂️</span> Subdomains</a>
       <a href="{% url 'question_list' %}" class="{% if request.resolver_match.url_name|startswith:'question' %}active{% endif %}"><span class="icon">❓</span> Questions</a>
       <a href="{% url 'quiz_list' %}" class="{% if request.resolver_match.url_name|startswith:'quiz' %}active{% endif %}"><span class="icon">📝</span> Quizzes</a>
+      <a href="{% url 'course_list' %}" class="{% if request.resolver_match.url_name|startswith:'course' %}active{% endif %}"><span class="icon">🎓</span> Courses</a>
+      <a href="{% url 'courseinfo_list' %}" class="{% if request.resolver_match.url_name|startswith:'courseinfo' %}active{% endif %}"><span class="icon">ℹ️</span> Course Info</a>
     </nav>
     <div class="user">
       <div class="avatar">{{ user.username|slice:":2" }}</div>

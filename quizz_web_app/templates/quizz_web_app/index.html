@@ -29,6 +29,11 @@
     <div class="value">{{ quiz_count }}</div>
     <div class="label">Quiz{{ quiz_count|pluralize:"zes" }}</div>
   </a>
+  <a href="{% url 'course_list' %}" class="card stat-card">
+    <div class="icon">🎓</div>
+    <div class="value">{{ course_count }}</div>
+    <div class="label">Course{{ course_count|pluralize }}</div>
+  </a>
 </div>
 
 <h2 class="section-heading">Quick actions</h2>

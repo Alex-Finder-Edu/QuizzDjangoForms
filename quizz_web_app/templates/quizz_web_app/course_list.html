@@ -1,0 +1,40 @@
+{% extends "quizz_web_app/base.html" %}
+{% block title %}Courses{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Courses</h1>
+    <p>Learning resources organized by domain and subdomain.</p>
+  </div>
+  <a href="{% url 'course_create' %}" class="btn btn-primary">+ Add Course</a>
+</div>
+
+<div class="card table-card">
+  <table>
+    <thead>
+      <tr><th>Title</th><th>Domain</th><th>Subdomain</th><th>Platform</th><th>Paragraphs</th><th>Date Created</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for course in courses %}
+      <tr>
+        <td><a href="{% url 'course_detail' course.pk %}">{{ course.title }}</a></td>
+        <td>{{ course.domain.name }}</td>
+        <td>{{ course.subdomain.name }}</td>
+        <td>{{ course.course_info.platform_name|default:"—" }}</td>
+        <td>{{ course.paragraphs.count }}</td>
+        <td>{{ course.date_created }}</td>
+        <td>
+          <div class="actions">
+            <a href="{% url 'course_detail' course.pk %}" class="btn btn-sm">View</a>
+            <a href="{% url 'course_update' course.pk %}" class="btn btn-sm">Edit</a>
+            <a href="{% url 'course_delete' course.pk %}" class="btn btn-sm btn-danger">Delete</a>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" class="empty-state">No courses yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
